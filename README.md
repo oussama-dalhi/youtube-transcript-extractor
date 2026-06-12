@@ -31,10 +31,7 @@ Users can paste a YouTube video URL into the interface and retrieve the video's 
 
 ## Preview
 
-```md
 ![Application Preview](app/assets/image.png)
-
-```
 
 ## How It Works
 
