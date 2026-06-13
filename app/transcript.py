@@ -27,22 +27,15 @@ def get_video_id(url: str) -> str | None:
 
 def get_transcript(video_id: str) -> str | None:
     try:
-        transcript = ytt_api.fetch(video_id)
-
+        transcript = ytt_api.fetch(
+            video_id,
+            languages=["en", "de"]
+            )
         return " ".join(
             snippet.text
             for snippet in transcript
         )
 
     except Exception as error:
-        print(error)
         return None
 
-
-if __name__ == "__main__":
-    video_id = "sa-vnKzVQJE"
-
-    transcript = get_transcript(video_id)
-
-    if transcript:
-        print(transcript[:500])
