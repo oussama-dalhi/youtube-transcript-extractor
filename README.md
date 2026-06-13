@@ -7,27 +7,42 @@ Users can paste a YouTube video URL into the interface and retrieve the video's 
 ## Features
 
 * Extract transcripts from YouTube videos
-* Validate YouTube URLs
+* Support for standard YouTube and youtu.be URLs
+* English and German transcript support
 * FastAPI REST API
 * Simple frontend built with HTML, CSS, and JavaScript
 * JSON-based communication between frontend and backend
 * Error handling for invalid videos and unavailable transcripts
 
-## Technologies Used
+## Known Limitations
 
-### Backend
+This project uses the `youtube-transcript-api` library to retrieve transcripts from YouTube videos.
 
-* Python
-* FastAPI
-* Pydantic
-* YouTube Transcript API
+The application works correctly in a local development environment. However, some cloud hosting providers may be blocked by YouTube because requests originate from datacenter IP addresses.
 
-### Frontend
+As a result, transcript extraction may fail in deployed environments with errors similar to:
 
-* HTML
-* CSS
-* JavaScript
-* Fetch API
+```text
+IpBlocked: YouTube is blocking requests from your IP
+```
+
+This is a limitation of the transcript retrieval service rather than the application itself.
+
+The project remains fully functional when run locally.
+
+## Future Improvements
+
+* Download transcripts as TXT files
+* Copy transcript to clipboard
+* Display video title and thumbnail
+* Support additional YouTube URL formats (Shorts, Embed URLs)
+* Transcript summarization using AI
+* Better UI and loading indicators
+* Investigate alternative transcript retrieval methods for cloud deployments
+
+```
+```
+
 
 ## Preview
 
@@ -138,8 +153,8 @@ POST /transcript
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/youtube-transcript-extractor.git
-cd youtube-transcript-extractor
+git clone https://github.com/oussama-dalhi/youtube-transcript-extractor.git
+cd youtube-transcript
 ```
 
 ### 2. Create a Virtual Environment
