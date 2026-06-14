@@ -4,25 +4,23 @@ ytt_api = YouTubeTranscriptApi()
 
 
 def get_video_id(url: str) -> str | None:
-    start = -1
+    
+    if "youtu.be/" in url:
+        start = url.find("youtu.be/") + len("youtu.be/")
+        end = url.find("?", start)
+        if end == -1:
+            return url[start:]
 
-    for i in range(len(url)):
-        if url[i] == "=":
-            start = i + 1
-            break
+        return url[start:end]
+    if "v=" in url:
+        start = url.find("v=") + 2
+        end = url.find("&", start)
+        if end == -1:
+            return url[start:]
 
-    if start == -1:
-        return None
+        return url[start:end]
 
-    result = ""
-
-    for i in range(start, len(url)):
-        if url[i] == "&":
-            break
-
-        result += url[i]
-
-    return result
+    return None
 
 
 def get_transcript(video_id: str) -> str | None:
