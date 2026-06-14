@@ -35,5 +35,6 @@ def get_transcript(video_id: str) -> str | None:
         )
 
     except Exception as error:
+        print(f"ERROR: {error}")
         return None
 
