@@ -27,14 +27,14 @@ def get_transcript(video_id: str) -> str | None:
     try:
         transcript = ytt_api.fetch(
             video_id,
-            languages=["en", "de"]
+            languages=["en", "de", "ar"]
             )
         return " ".join(
             snippet.text
             for snippet in transcript
         )
 
-    except Exception as error:
+    except Exception as error:  # noqa: BLE001
         print(f"ERROR: {error}")
         return None
 

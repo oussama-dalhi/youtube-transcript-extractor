@@ -1,11 +1,12 @@
-from fastapi import FastAPI
+import fastapi
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from app.transcript import get_video_id, get_transcript
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 
-app = FastAPI()
+from app.transcript import get_transcript, get_video_id
+
+app = fastapi.FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://192.168.100.226:8080"],
