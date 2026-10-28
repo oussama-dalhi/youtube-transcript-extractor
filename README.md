@@ -1,3 +1,9 @@
+---
+title: YouTube Transcript Extractor
+sdk: docker
+app_port: 7860
+---
+
 # YouTube Transcript Extractor
 
 A full-stack web application that extracts transcripts from YouTube videos using FastAPI.
