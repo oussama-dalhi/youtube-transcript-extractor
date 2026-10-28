@@ -20,16 +20,19 @@ extractBtn.addEventListener("click", async () => {
     });
 
     const data = await response.json();
-    if(!data.success)
-    {
-      output.textContent = data.error;
-      return;
+    if (!response.ok)
+      {
+          output.textContent = data.detail || 
+          "An unexpected error occured"
+          return;
     }
 
     output.textContent = data.transcript;
     urlInput.value = "";
     
   } catch (error) {
+      console.error(error);
+      output.textContent = "Network error. Please check connection"
     console.error(error);
   } finally {
     extractBtn.disabled = false;
