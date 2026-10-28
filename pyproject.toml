@@ -1,2 +1,16 @@
+[project]
+name = "youtube-transcript-extractor"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+        "fastapi[standard]",
+            "pydantic",
+                "python-dotenv",
+                    "requests",
+]
+
+[tool.uv]
+package = false
+
 [tool.fastapi]
 entrypoint = "app.main:app"
