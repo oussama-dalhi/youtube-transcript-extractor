@@ -1,278 +1,122 @@
----
-title: YouTube Transcript Extractor
-sdk: docker
-app_port: 7860
----
-
 # YouTube Transcript Extractor
 
-A full-stack web application that extracts transcripts from YouTube videos using FastAPI.
-
-Users can paste a YouTube video URL into the interface and retrieve the video's transcript in seconds.
-
-## Features
-
-* Extract transcripts from YouTube videos
-* Support for standard YouTube and youtu.be URLs
-* English and German transcript support
-* FastAPI REST API
-* Simple frontend built with HTML, CSS, and JavaScript
-* JSON-based communication between frontend and backend
-* Error handling for invalid videos and unavailable transcripts
-
-## Known Limitations
-
-This project uses the `youtube-transcript-api` library to retrieve transcripts from YouTube videos.
-
-The application works correctly in a local development environment. However, some cloud hosting providers may be blocked by YouTube because requests originate from datacenter IP addresses.
-
-As a result, transcript extraction may fail in deployed environments with errors similar to:
-
-```text
-IpBlocked: YouTube is blocking requests from your IP
-```
-
-This is a limitation of the transcript retrieval service rather than the application itself.
-
-The project remains fully functional when run locally.
-
-## Future Improvements
-
-* Download transcripts as TXT files
-* Copy transcript to clipboard
-* Display video title and thumbnail
-* Support additional YouTube URL formats (Shorts, Embed URLs)
-* Transcript summarization using AI
-* Better UI and loading indicators
-* Investigate alternative transcript retrieval methods for cloud deployments
-
-```
-```
-
-
-## Preview
+A small full-stack web app that turns a YouTube link into a copyable transcript. Built with FastAPI and plain HTML, CSS and JavaScript.
 
 ![Application Preview](app/assets/image.png)
 
+## Features
+
+- Paste a YouTube link and get the full transcript in seconds
+- English, German and Arabic transcripts, including auto-generated captions
+- One-click copy to clipboard
+- 24-hour in-memory cache, so repeated videos cost nothing
+- Per-IP rate limiting (10 requests per minute)
+- Clear error messages for invalid links, missing transcripts and busy servers
+- Responsive light theme that works on phones
+
+## Tech Stack
+
+FastAPI, Pydantic, requests, cachetools, slowapi, vanilla JavaScript, and [TranscriptAPI](https://transcriptapi.com/) for fetching transcripts.
+
+## Why These Choices
+
+- **FastAPI:** a small, modern framework that fits a single-endpoint JSON API well. Pydantic validates requests from plain type hints, error handling stays simple, and interactive API docs are generated automatically at `/docs`.
+- **TranscriptAPI:** handles transcript retrieval when direct YouTube access is unreliable, since YouTube blocks requests from datacenter IPs.
+- **In-memory cache:** reduces repeated external API requests, which saves credits and makes repeat lookups instant.
+- **SlowAPI:** limits request frequency so one visitor can't use up the API credits.
+- **Vanilla JavaScript:** keeps the frontend lightweight, with no build step or framework needed for a single-page tool.
+
 ## How It Works
 
-The application follows a simple client-server architecture:
+1. The browser sends `POST /transcript` with the YouTube URL.
+2. FastAPI validates the input and checks the cache.
+3. On a cache miss, the backend requests the transcript from TranscriptAPI.
+4. The segments are joined into one string, cached, and returned as JSON.
 
-```text
-User
- │
- ▼
-Paste YouTube URL
- │
- ▼
-Frontend (HTML/CSS/JavaScript)
- │
- ▼
-POST /transcript
- │
- ▼
-FastAPI Backend
- │
- ▼
-Extract Video ID
- │
- ▼
-YouTube Transcript API
- │
- ▼
-Retrieve Transcript
- │
- ▼
-Return JSON Response
- │
- ▼
-Display Transcript
+## Getting Started
+
+```bash
+git clone https://github.com/oussama-dalhi/youtube-transcript-extractor.git
+cd youtube-transcript-extractor
+python -m venv .venv
+source .venv/bin/activate   # Git Bash: source .venv/Scripts/activate | Windows CMD: .venv\Scripts\activate.bat
+pip install -r requirements.txt
 ```
 
-### Example Flow
+Create a `.env` file in the project root with your API key (new TranscriptAPI accounts get 100 free credits):
 
-1. The user enters a YouTube URL.
-2. JavaScript sends a POST request to the FastAPI backend.
-3. The backend extracts the YouTube video ID.
-4. The backend requests the transcript from YouTube.
-5. Transcript segments are combined into a single string.
-6. The transcript is returned as JSON.
-7. The frontend displays the transcript.
+```
+TRANSCRIPT_API_KEY=your_key_here
+```
+
+Start the server:
+
+```bash
+fastapi dev app/main.py
+```
+
+Open http://127.0.0.1:8000. Interactive API docs are at http://127.0.0.1:8000/docs.
+
+## API
+
+`POST /transcript`
+
+```json
+{ "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ" }
+```
+
+Success:
+
+```json
+{ "video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "transcript": "..." }
+```
+
+Errors always use the same shape, with a matching status code (404 no transcript, 422 invalid link, 429 too many requests, 503 service problem):
+
+```json
+{ "detail": "No transcript found." }
+```
+
+## Problems I Solved
+
+| Problem | Solution |
+|---|---|
+| YouTube blocks datacenter IPs, so the `youtube-transcript-api` library worked locally but failed once deployed (`IpBlocked`) | Switched to the hosted TranscriptAPI, which handles access to YouTube |
+| Every request costs an API credit | Added a 24-hour TTL cache and a rate limit per-IP |
+| Errors were inconsistent across the backend | A custom `TranscriptError` with a status code and one exception handler, so every error returns `{"detail": ...}` |
+| FastAPI validation errors come back as lists, not strings | Pydantic trims and length-checks the URL, and the frontend maps 422 to a friendly message |
+| Errors showed up inside the transcript box, and Copy copied them | Separate status line; the result box stays hidden until there is a real transcript |
+| The button stayed disabled after an error response | `try/catch/finally` so it is always re-enabled |
+| Long transcripts were a hard-to-read wall of monospace text | Proportional font, generous line height, scrollable result box |
+| Layout broke down on small screens | Media queries for a full-width button and stacked footer links |
+
+## Known Limitations
+
+- Needs a TranscriptAPI key, and usage is limited by your credits.
+- The cache and rate-limit counters live in memory, so they reset on restart and are not shared between multiple instances.
+
+## Ideas to DO
+
+- Download the transcript as a TXT file
+- Video title and thumbnail
+- AI summary of the transcript
+
 
 ## Project Structure
 
-```text
+```
 youtube-transcript-extractor/
-│
 ├── app/
+│   ├── assets/image.png
 │   ├── static/
 │   │   ├── css/style.css
 │   │   └── js/script.js
-│   │
-│   ├── templates/
-│   │   └── index.html
-│   │
+│   ├── templates/index.html
 │   ├── main.py
 │   └── transcript.py
-│
+├── pyproject.toml
 ├── requirements.txt
 └── README.md
 ```
 
-## API Endpoint
-
-### Extract Transcript
-
-```http
-POST /transcript
-```
-
-### Request
-
-```json
-{
-  "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-}
-```
-
-### Successful Response
-
-```json
-{
-  "success": true,
-  "video_id": "dQw4w9WgXcQ",
-  "transcript": "..."
-}
-```
-
-### Error Response
-
-```json
-{
-  "success": false,
-  "error": "Could not retrieve transcript"
-}
-```
-
-## Installation
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/oussama-dalhi/youtube-transcript-extractor.git
-cd youtube-transcript
-```
-
-### 2. Create a Virtual Environment
-
-#### Windows
-
-```bash
-py -m venv .venv
-```
-
-#### Git Bash / Linux / macOS
-
-```bash
-python -m venv .venv
-```
-
-### 3. Activate the Virtual Environment
-
-#### Windows CMD
-
-```bash
-.venv\Scripts\activate.bat
-```
-
-#### Windows PowerShell
-
-```bash
-.venv\Scripts\Activate.ps1
-```
-
-#### Git Bash
-
-```bash
-source .venv/Scripts/activate
-```
-
-#### Linux / macOS
-
-```bash
-source .venv/bin/activate
-```
-
-### 4. Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-## Running the Application
-
-### Start the FastAPI Server
-
-#### Windows
-
-```bash
-py -m fastapi dev app/main.py
-```
-
-or
-
-```bash
-py -m uvicorn app.main:app --reload
-```
-
-#### Git Bash / Linux / macOS
-
-```bash
-python -m fastapi dev app/main.py
-```
-
-or
-
-```bash
-python -m uvicorn app.main:app --reload
-```
-
-### Open the Application
-
-```text
-http://127.0.0.1:8000
-```
-
-### API Documentation
-
-FastAPI automatically generates interactive API documentation:
-
-```text
-http://127.0.0.1:8000/docs
-```
-
-## What I Learned
-
-Through this project I learned:
-
-* Building REST APIs with FastAPI
-* Request validation using Pydantic
-* Working with JSON requests and responses
-* Connecting a frontend to a backend using Fetch API
-* Handling CORS configuration
-* Organizing a Python web application
-* Integrating third-party Python libraries
-* Error handling and API design
-
-## Future Improvements
-
-* Download transcripts as TXT files
-* Support multiple transcript languages
-* Copy transcript to clipboard
-* Display video title and thumbnail
-* Transcript summarization using AI
-* Better UI and loading indicators
-
-## License
-
-This project was built for educational and portfolio purposes.
+Built for fun and education.
