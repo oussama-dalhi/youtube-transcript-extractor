@@ -18,6 +18,7 @@ const getErrorMessage = (response, data) => {
 };
 
 async function extractTranscript() {
+  if (extractBtn.disabled) return;
   const url = urlInput.value.trim();
     if (!url) {
     setStatus("Please paste a YouTube link.", true);

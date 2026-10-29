@@ -82,6 +82,7 @@ button {
   border-radius: 10px;
   cursor: pointer;
   transition: background 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 button:focus-visible {
@@ -217,7 +218,7 @@ footer a:focus-visible {
   }
   footer ul {
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     gap: 14px;
   }
   .container {
@@ -253,9 +254,13 @@ footer a:focus-visible {
 }
 
 @media (hover: none) {
+  footer a {
+    color: var(--accent);
+  }
   footer a::after {
     transform: scaleX(1);
     height: 1px;
     background-color: var(--border);
+    opacity: 0.35;
   }
 }
