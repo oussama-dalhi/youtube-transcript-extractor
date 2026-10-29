@@ -43,7 +43,13 @@ source .venv/bin/activate   # Git Bash: source .venv/Scripts/activate | Windows 
 pip install -r requirements.txt
 ```
 
-Create a `.env` file in the project root with your API key (new TranscriptAPI accounts get 100 free credits):
+Copy the example environment file and add your API key (new TranscriptAPI accounts get 100 free credits):
+
+```bash
+cp .env.example .env
+```
+
+Then edit `.env`:
 
 ```
 TRANSCRIPT_API_KEY=your_key_here
@@ -76,6 +82,14 @@ Errors always use the same shape, with a matching status code (404 no transcript
 ```json
 { "detail": "No transcript found." }
 ```
+## Deployment
+
+The app is deployed on [FastAPI Cloud](https://fastapicloud.com/).
+
+- Dependencies must be listed in `pyproject.toml`, which is what FastAPI Cloud installs from. `requirements.txt` is only for local setup, so keep the two in sync.
+- Set `TRANSCRIPT_API_KEY` as a secret: `fastapi cloud env set --secret TRANSCRIPT_API_KEY "your-key"`
+- Deploy with `fastapi login` and then `fastapi deploy`.
+-Or just link your github repo with fastapicloud
 
 ## Problems I Solved
 
@@ -95,7 +109,7 @@ Errors always use the same shape, with a matching status code (404 no transcript
 - Needs a TranscriptAPI key, and usage is limited by your credits.
 - The cache and rate-limit counters live in memory, so they reset on restart and are not shared between multiple instances.
 
-## Ideas to DO
+## Ideas for Improvement
 
 - Download the transcript as a TXT file
 - Video title and thumbnail

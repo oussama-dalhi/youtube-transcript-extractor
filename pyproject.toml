@@ -3,10 +3,12 @@ name = "youtube-transcript-extractor"
 version = "0.1.0"
 requires-python = ">=3.10"
 dependencies = [
-        "fastapi[standard]",
-            "pydantic",
-                "python-dotenv",
-                    "requests",
+    "fastapi[standard]",
+    "pydantic",
+    "python-dotenv",
+    "requests",
+    "cachetools",
+    "slowapi",
 ]
 
 [tool.uv]
