@@ -2,7 +2,13 @@
 
 A small full-stack web app that turns a YouTube link into a copyable transcript. Built with FastAPI and plain HTML, CSS and JavaScript.
 
-![Application Preview](app/assets/image.png)
+# YouTube Transcript Extractor
+
+**Live demo:** https://youtube-transcript-extractor.fastapicloud.dev/
+
+A small full-stack web app that turns a YouTube link into a copyable transcript...
+
+[![YouTube Transcript Extractor](app/assets/showcase.png)](https://youtube-transcript-extractor.fastapicloud.dev/)
 
 ## Features
 
