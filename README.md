@@ -1,14 +1,11 @@
 # YouTube Transcript Extractor
 
-A small full-stack web app that turns a YouTube link into a copyable transcript. Built with FastAPI and plain HTML, CSS and JavaScript.
-
-# YouTube Transcript Extractor
-
 **Live demo:** https://youtube-transcript-extractor.fastapicloud.dev/
 
-A small full-stack web app that turns a YouTube link into a copyable transcript...
+A small full-stack web app that turns a YouTube link into a copyable transcript. Built with FastAPI and plain HTML, CSS and JavaScript.
 
 [![YouTube Transcript Extractor](app/assets/showcase.png)](https://youtube-transcript-extractor.fastapicloud.dev/)
+
 
 ## Features
 
@@ -18,7 +15,7 @@ A small full-stack web app that turns a YouTube link into a copyable transcript.
 - 24-hour in-memory cache, so repeated videos cost nothing
 - Per-IP rate limiting (10 requests per minute)
 - Clear error messages for invalid links, missing transcripts and busy servers
-- Responsive light theme that works on phones
+- Responsive design that works well on phones
 
 ## Tech Stack
 
@@ -64,7 +61,7 @@ TRANSCRIPT_API_KEY=your_key_here
 Start the server:
 
 ```bash
-fastapi dev app/main.py
+python -m uvicorn app.main:app --reload
 ```
 
 Open http://127.0.0.1:8000. Interactive API docs are at http://127.0.0.1:8000/docs.
@@ -127,7 +124,7 @@ The app is deployed on [FastAPI Cloud](https://fastapicloud.com/).
 ```
 youtube-transcript-extractor/
 ├── app/
-│   ├── assets/image.png
+│   ├── assets/showcase.png
 │   ├── static/
 │   │   ├── css/style.css
 │   │   └── js/script.js
