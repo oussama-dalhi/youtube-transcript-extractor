@@ -1,39 +1,45 @@
+from typing import Annotated
+
 import fastapi
-from fastapi import HTTPException, status
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.requests import Request
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
+from pydantic import BaseModel, StringConstraints
+from slowapi import Limiter
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 
-from app.transcript import get_transcript
+from app.transcript import TranscriptError, get_transcript
 
+limiter = Limiter(key_func=get_remote_address)
 app = fastapi.FastAPI(title="Youtube Transcript API")
-
+app.state.limiter = limiter
 
 class TranscriptRequest(BaseModel):
-    url: str
+    url: Annotated[
+        str, StringConstraints(strip_whitespace=True, min_length=1, max_length=200)
+    ]
+
 
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
+@app.exception_handler(TranscriptError)
+async def transcript_error_handler(request: Request, exc: TranscriptError):
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.message})
+
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
+    return JSONResponse(
+        status_code=429,
+        content={"detail": "Too many requests. Please wait a minute and try again."},
+    )
 
 @app.get("/")
 def root():
     return FileResponse("app/templates/index.html")
 
-
 @app.post("/transcript")
-def transcript(request: TranscriptRequest):
-    if not request.url.strip():
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="The provided url can't be empty",
-        )
-
-    result = get_transcript(request.url)
-    if not result:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Could not retrieve transcript from the provided link. Ensure captions exist or the video is public.",
-        )
-    return {"video_url": request.url, "transcript": result}
+@limiter.limit("10/minute")
+def transcript(request: Request, body: TranscriptRequest):
+    return {"video_url": body.url, "transcript": get_transcript(body.url)}
