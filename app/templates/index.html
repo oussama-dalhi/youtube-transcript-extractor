@@ -2,20 +2,73 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Youtube-transcripter</title>
+    <meta name="viewport" name="description" content="width=device-width, initial-scale=1.0" />
+    <title>YouTube Transcript Extractor</title>
     <link rel="stylesheet" href="/static/css/style.css" />
     <script src="/static/js/script.js" defer></script>
   </head>
   <body>
-    <div class="container">
-      <h1>YouTube Transcript Extractor</h1>
+    <main class="container">
+      <header>
+        <h1>YouTube Transcript Extractor</h1>
+        <p class="subtitle">
+          Paste a YouTube link and get the full transcript in seconds.
+        </p>
+      </header>
 
-      <input type="text" id="urlInput" placeholder="Paste YouTube URL" />
+      <section class="input-group">
+        <label for="urlInput" class="visually-hidden">YouTube URL</label>
+        <input
+          type="url"
+          id="urlInput"
+          placeholder="https://www.youtube.com/watch?v=..."
+          autocomplete="off"
+          autofocus
+        />
+        <button id="extractBtn">Get Transcript</button>
+        
+      </section>
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+      <section class="result">
+        <div class="result-header">
+          <h2>Transcript</h2>
+          <button id="copyBtn" class="secondary">Copy</button>
+        </div>
+        <pre id="output"></pre>
+      </section>
 
-      <button id="extractBtn">Get Transcript</button>
-
-      <pre id="output"></pre>
-    </div>
+      <footer>
+        <nav aria-label="Footer">
+          <ul>
+            <li>
+              Built by
+              <a
+                href="https://github.com/oussama-dalhi/"
+                target="_blank"
+                rel="noopener"
+                >Oussama Dalhi</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/oussama-dalhi/youtube-transcript-extractor"
+                target="_blank"
+                rel="noopener"
+                >Source code</a
+              >
+            </li>
+            <li>
+              Powered by
+              <a
+                href="https://transcriptapi.com/"
+                target="_blank"
+                rel="noopener"
+                >TranscriptAPI</a
+              >
+            </li>
+          </ul>
+        </nav>
+      </footer>
+    </main>
   </body>
 </html>
