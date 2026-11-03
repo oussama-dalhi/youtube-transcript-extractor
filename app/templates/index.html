@@ -7,15 +7,21 @@
       name="description"
       content="Extract transcripts from YouTube videos."
     />
-    <meta name="theme-color" content="#faf8f5" />
-    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=8" />
     <title>YouTube Transcript Extractor</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="/static/css/style.css?v=8" />
-    <script src="/static/js/script.js?v=8" defer></script>
+    <script type="module" src="/static/js/script.js?v=8"></script>
   </head>
   <body>
     <div class="app-shell" id="appShell">
-      <aside class="sidebar" id="sidebar" aria-label="Main menu">
+      <aside class="sidebar" id="sidebar" aria-label="Transcript history">
         <div class="sidebar-brand">
           <a
             class="brand-mark"
@@ -28,7 +34,7 @@
             class="icon-button sidebar-close"
             id="sidebarClose"
             type="button"
-            aria-label="Close menu"
+            aria-label="Close sidebar"
           >
             ×
           </button>
@@ -41,7 +47,7 @@
 
         <section class="history-section" aria-labelledby="historyHeading">
           <h2 class="sidebar-label" id="historyHeading">Your history</h2>
-          <div class="history-list" id="historyList" aria-live="polite">
+          <div class="history-list" id="historyList">
             <p class="sidebar-message">
               Sign in to save and revisit your transcripts.
             </p>
@@ -50,46 +56,30 @@
 
         <div class="sidebar-footer">
           <div class="guest-sidebar-card" id="guestSidebarCard">
-            <p>Sign in to save your transcripts and access them anywhere.</p>
+            <p>Keep your transcripts in one place.</p>
             <button
-              class="sidebar-auth-btn"
+              class="primary sidebar-auth-btn"
               id="sidebarSignInBtn"
               type="button"
             >
               Sign in
             </button>
-            <button
-              class="sidebar-auth-btn outline"
-              id="sidebarRegisterBtn"
-              type="button"
-            >
-              Create account
-            </button>
           </div>
 
-          <div class="user-menu" id="userMenu" hidden>
-            <div class="account-popover" id="accountPopover" hidden>
-              <button class="account-menu-item" id="logoutBtn" type="button">
-                <span aria-hidden="true">↪</span>
-                Log out
-              </button>
+          <div class="user-panel" id="userPanel" hidden>
+            <div class="user-avatar" id="userAvatar" aria-hidden="true">U</div>
+            <div class="user-details">
+              <span class="user-name" id="userName"></span>
+              <span class="user-username" id="userUsername"></span>
             </div>
             <button
-              class="user-panel"
-              id="userPanelBtn"
+              class="icon-button logout-btn"
+              id="logoutBtn"
               type="button"
-              aria-haspopup="true"
-              aria-controls="accountPopover"
-              aria-expanded="false"
+              aria-label="Log out"
+              title="Log out"
             >
-              <span class="user-avatar" id="userAvatar" aria-hidden="true"
-                >U</span
-              >
-              <span class="user-details">
-                <span class="user-name" id="userName"></span>
-                <span class="user-username" id="userUsername"></span>
-              </span>
-              <span class="user-chevron" aria-hidden="true">⌃</span>
+              ↪
             </button>
           </div>
         </div>
@@ -99,7 +89,7 @@
         class="sidebar-backdrop"
         id="sidebarBackdrop"
         type="button"
-        aria-label="Close menu"
+        aria-label="Close sidebar"
         tabindex="-1"
       ></button>
 
@@ -109,38 +99,60 @@
             class="icon-button sidebar-toggle"
             id="sidebarToggle"
             type="button"
-            aria-label="Toggle menu"
+            aria-label="Toggle sidebar"
             aria-controls="sidebar"
-            aria-expanded="false"
+            aria-expanded="true"
           >
             ☰
           </button>
+
+          <div class="topbar-actions" id="guestActions">
+            <button
+              class="secondary topbar-sign-in"
+              id="signInBtn"
+              type="button"
+            >
+              Sign in
+            </button>
+            <button
+              class="primary topbar-register"
+              id="registerBtn"
+              type="button"
+            >
+              Create account
+            </button>
+          </div>
         </div>
 
         <main class="container">
-          <header class="page-header">
+          <header class="page-header" id="pageHeader">
             <h1>YouTube Transcript Extractor</h1>
             <p class="subtitle">
               Paste a YouTube link and get the full transcript in seconds.
             </p>
           </header>
 
-          <section
+          <form
             class="input-group"
+            id="extractControls"
             aria-label="Extract a YouTube transcript"
+            novalidate
           >
             <label for="urlInput" class="visually-hidden">YouTube URL</label>
             <input
               type="url"
               id="urlInput"
-              placeholder="https://www.youtube.com/watch?v=..."
+              name="url"
               inputmode="url"
+              enterkeyhint="go"
+              placeholder="https://www.youtube.com/watch?v=..."
               autocomplete="off"
-              autocapitalize="off"
-              spellcheck="false"
+              autofocus
             />
-            <button id="extractBtn" type="button">Get Transcript</button>
-          </section>
+            <button class="primary" id="extractBtn" type="submit">
+              Get Transcript
+            </button>
+          </form>
 
           <p id="status" class="status" role="status" aria-live="polite"></p>
 
@@ -236,7 +248,7 @@
             required
           />
 
-          <button class="auth-submit" type="submit">Sign in</button>
+          <button class="primary auth-submit" type="submit">Sign in</button>
         </form>
 
         <form class="auth-form" id="registerForm" hidden>
@@ -245,7 +257,7 @@
             id="registerName"
             name="name"
             type="text"
-            minlength="3"
+            minlength="2"
             maxlength="100"
             autocomplete="name"
             required
@@ -274,7 +286,9 @@
             required
           />
 
-          <button class="auth-submit" type="submit">Create account</button>
+          <button class="primary auth-submit" type="submit">
+            Create account
+          </button>
         </form>
 
         <p
