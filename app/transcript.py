@@ -1,6 +1,7 @@
 import os
 import re
 import threading
+from typing import TypedDict
 
 import requests
 from cachetools import TTLCache
@@ -10,21 +11,31 @@ load_dotenv()
 
 BASE_URL = "https://transcriptapi.com/api/v2"
 
-_cache = TTLCache[str, str](maxsize=500, ttl=60 * 60 * 24) 
+
+class TranscriptResult(TypedDict):
+    title: str
+    transcript: str
+
+
+_cache = TTLCache[str, TranscriptResult](maxsize=500, ttl=60 * 60 * 24)
 _cache_lock = threading.Lock()
 
 _SOUND_TAGS = re.compile(r"\[[^\]]*\]")
+
+
 class TranscriptError(Exception):
     def __init__(self, message: str, status_code: int = 503):
         self.message = message
         self.status_code = status_code
         super().__init__(message)
 
+
 def _clean(text: str) -> str:
     text = _SOUND_TAGS.sub("", text)
     return re.sub(r"\s+", " ", text).strip()
 
-def get_transcript(video_url: str) -> str:
+
+def get_transcript(video_url: str) -> TranscriptResult:
     key = video_url.strip()
 
     with _cache_lock:
@@ -32,19 +43,24 @@ def get_transcript(video_url: str) -> str:
     if cached is not None:
         return cached
 
-    text = _fetch_transcript(key)
+    result = _fetch_transcript(key)
     with _cache_lock:
-        _cache[key] = text
-    return text
+        _cache[key] = result
+    return result
 
-def _fetch_transcript(video_url: str) -> str:
+
+def _fetch_transcript(video_url: str) -> TranscriptResult:
     api_key = os.getenv("TRANSCRIPT_API_KEY")
     if not api_key:
         print("Error: TRANSCRIPT_API_KEY is missing")
         raise TranscriptError("Transcript service is not configured.")
-    
+
     headers = {"Authorization": f"Bearer {api_key}"}
-    params = {"video_url": video_url, "language": "en,de,ar,asr"}
+    params = {
+        "video_url": video_url,
+        "language": "en,de,ar,asr",
+        "send_metadata": "true",
+    }
 
     try:
         response = requests.get(
@@ -69,9 +85,16 @@ def _fetch_transcript(video_url: str) -> str:
 
     try:
         data = response.json()
+        if not isinstance(data, dict):
+            raise TranscriptError("Invalid response from transcript service.")
+        metadata = data.get("metadata") or {}
+        raw_title = metadata.get("title") if isinstance(metadata, dict) else None
+        title = raw_title.strip() if isinstance(raw_title, str) else None
+        if not title:
+            title = "Untitled video"
         text = _clean(" ".join(segment["text"] for segment in data["transcript"]))
     except (ValueError, KeyError, TypeError) as error:
         raise TranscriptError("Invalid response from transcript service.") from error
     if not text:
         raise TranscriptError("This video has no transcript.", 404)
-    return text
+    return {"title": title or "Untitled video", "transcript": text}
