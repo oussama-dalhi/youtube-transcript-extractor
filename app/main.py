@@ -22,6 +22,8 @@ from app.routes.history import router as history_router
 from app.transcript import TranscriptError, get_transcript
 
 logger = logging.getLogger(__name__)
+logging.getLogger("psycopg").setLevel(logging.DEBUG)
+logging.getLogger("psycopg.pool").setLevel(logging.DEBUG)
 
 
 @asynccontextmanager

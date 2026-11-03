@@ -32,5 +32,4 @@ CREATE TABLE IF NOT EXISTS saved_transcripts (
 CREATE INDEX IF NOT EXISTS idx_saved_transcripts_user_created
 ON saved_transcripts (user_id, created_at DESC, id DESC);
 
-ALTER TABLE saved_transcripts
-ADD COLUMN IF NOT EXISTS title TEXT;
+
