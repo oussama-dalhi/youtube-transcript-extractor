@@ -5,6 +5,7 @@ from pwdlib import PasswordHash
 from pydantic import BaseModel, StringConstraints
 
 from app.db.connection import pool
+from app.limiter import limiter
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -73,6 +74,7 @@ def register(body: RegisterRequest, request: Request):
 
 
 @router.post("/login")
+@limiter.limit("5/minute")
 def login(body: LoginRequest, request: Request):
     username = body.username
 

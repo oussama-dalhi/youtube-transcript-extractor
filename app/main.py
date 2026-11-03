@@ -12,13 +12,13 @@ from fastapi.requests import Request
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, StringConstraints
-from slowapi import Limiter
 from slowapi.errors import RateLimitExceeded
-from slowapi.util import get_remote_address
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.db.connection import pool
+from app.limiter import limiter
 from app.routes.auth import router as auth_router
+from app.routes.history import router as history_router
 from app.transcript import TranscriptError, get_transcript
 
 logger = logging.getLogger(__name__)
@@ -37,7 +37,7 @@ SESSION_SECRET = os.getenv("SESSION_SECRET")
 if not SESSION_SECRET:
     raise RuntimeError("SESSION_SECRET is not configured")
 
-limiter = Limiter(key_func=get_remote_address)
+
 app = fastapi.FastAPI(title="YouTube Transcript Extractor", lifespan=lifespan)
 app.state.limiter = limiter
 
@@ -51,6 +51,7 @@ app.add_middleware(
 )
 
 app.include_router(auth_router)
+app.include_router(history_router)
 
 
 class TranscriptRequest(BaseModel):
