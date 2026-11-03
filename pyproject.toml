@@ -9,6 +9,9 @@ dependencies = [
     "requests",
     "cachetools",
     "slowapi",
+    "psycopg[binary,pool]",
+    "pwdlib[argon2]",
+    "itsdangerous",
 ]
 
 [tool.uv]
