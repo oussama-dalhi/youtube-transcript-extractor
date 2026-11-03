@@ -3,74 +3,300 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Extract transcripts from YouTube videos." />
+    <meta
+      name="description"
+      content="Extract transcripts from YouTube videos."
+    />
+    <meta name="theme-color" content="#faf8f5" />
     <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
     <title>YouTube Transcript Extractor</title>
-    <link rel="stylesheet" href="/static/css/style.css?v=4" />
-    <script src="/static/js/script.js?v=4" defer></script>
+    <link rel="stylesheet" href="/static/css/style.css?v=8" />
+    <script src="/static/js/script.js?v=8" defer></script>
   </head>
   <body>
-    <main class="container">
-      <header>
-        <h1>YouTube Transcript Extractor</h1>
-        <p class="subtitle">
-          Paste a YouTube link and get the full transcript in seconds.
-        </p>
-      </header>
-
-      <section class="input-group">
-        <label for="urlInput" class="visually-hidden">YouTube URL</label>
-        <input
-          type="url"
-          id="urlInput"
-          placeholder="https://www.youtube.com/watch?v=..."
-          autocomplete="off"
-          autofocus
-        />
-        <button id="extractBtn">Get Transcript</button>
-        
-      </section>
-      <p id="status" class="status" role="status" aria-live="polite"></p>
-      <section class="result">
-        <div class="result-header">
-          <h2>Transcript</h2>
-          <button id="copyBtn" class="secondary">Copy</button>
+    <div class="app-shell" id="appShell">
+      <aside class="sidebar" id="sidebar" aria-label="Main menu">
+        <div class="sidebar-brand">
+          <a
+            class="brand-mark"
+            href="/"
+            aria-label="YouTube Transcript Extractor home"
+            >YT</a
+          >
+          <span class="brand-name">Transcript Extractor</span>
+          <button
+            class="icon-button sidebar-close"
+            id="sidebarClose"
+            type="button"
+            aria-label="Close menu"
+          >
+            ×
+          </button>
         </div>
-        <pre id="output"></pre>
-      </section>
 
-      <footer>
-        <nav aria-label="Footer">
-          <ul>
-            <li>
-              Built by
-              <a
-                href="https://github.com/oussama-dalhi/"
-                target="_blank"
-                rel="noopener"
-                >Oussama Dalhi</a
+        <button class="new-transcript-btn" id="newTranscriptBtn" type="button">
+          <span aria-hidden="true">＋</span>
+          New transcript
+        </button>
+
+        <section class="history-section" aria-labelledby="historyHeading">
+          <h2 class="sidebar-label" id="historyHeading">Your history</h2>
+          <div class="history-list" id="historyList" aria-live="polite">
+            <p class="sidebar-message">
+              Sign in to save and revisit your transcripts.
+            </p>
+          </div>
+        </section>
+
+        <div class="sidebar-footer">
+          <div class="guest-sidebar-card" id="guestSidebarCard">
+            <p>Sign in to save your transcripts and access them anywhere.</p>
+            <button
+              class="sidebar-auth-btn"
+              id="sidebarSignInBtn"
+              type="button"
+            >
+              Sign in
+            </button>
+            <button
+              class="sidebar-auth-btn outline"
+              id="sidebarRegisterBtn"
+              type="button"
+            >
+              Create account
+            </button>
+          </div>
+
+          <div class="user-menu" id="userMenu" hidden>
+            <div class="account-popover" id="accountPopover" hidden>
+              <button class="account-menu-item" id="logoutBtn" type="button">
+                <span aria-hidden="true">↪</span>
+                Log out
+              </button>
+            </div>
+            <button
+              class="user-panel"
+              id="userPanelBtn"
+              type="button"
+              aria-haspopup="true"
+              aria-controls="accountPopover"
+              aria-expanded="false"
+            >
+              <span class="user-avatar" id="userAvatar" aria-hidden="true"
+                >U</span
               >
-            </li>
-            <li>
-              <a
-                href="https://github.com/oussama-dalhi/youtube-transcript-extractor"
-                target="_blank"
-                rel="noopener"
-                >Source code</a
-              >
-            </li>
-            <li>
-              Powered by
-              <a
-                href="https://transcriptapi.com/"
-                target="_blank"
-                rel="noopener"
-                >TranscriptAPI</a
-              >
-            </li>
-          </ul>
-        </nav>
-      </footer>
-    </main>
+              <span class="user-details">
+                <span class="user-name" id="userName"></span>
+                <span class="user-username" id="userUsername"></span>
+              </span>
+              <span class="user-chevron" aria-hidden="true">⌃</span>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <button
+        class="sidebar-backdrop"
+        id="sidebarBackdrop"
+        type="button"
+        aria-label="Close menu"
+        tabindex="-1"
+      ></button>
+
+      <div class="app-main">
+        <div class="topbar">
+          <button
+            class="icon-button sidebar-toggle"
+            id="sidebarToggle"
+            type="button"
+            aria-label="Toggle menu"
+            aria-controls="sidebar"
+            aria-expanded="false"
+          >
+            ☰
+          </button>
+        </div>
+
+        <main class="container">
+          <header class="page-header">
+            <h1>YouTube Transcript Extractor</h1>
+            <p class="subtitle">
+              Paste a YouTube link and get the full transcript in seconds.
+            </p>
+          </header>
+
+          <section
+            class="input-group"
+            aria-label="Extract a YouTube transcript"
+          >
+            <label for="urlInput" class="visually-hidden">YouTube URL</label>
+            <input
+              type="url"
+              id="urlInput"
+              placeholder="https://www.youtube.com/watch?v=..."
+              inputmode="url"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+            />
+            <button id="extractBtn" type="button">Get Transcript</button>
+          </section>
+
+          <p id="status" class="status" role="status" aria-live="polite"></p>
+
+          <section
+            class="result"
+            id="resultSection"
+            aria-label="Transcript result"
+          >
+            <div class="result-header">
+              <h2 id="resultTitle">Transcript</h2>
+              <button id="copyBtn" class="secondary" type="button">Copy</button>
+            </div>
+            <pre id="output"></pre>
+          </section>
+
+          <footer>
+            <nav aria-label="Footer">
+              <ul>
+                <li>
+                  Built by
+                  <a
+                    href="https://github.com/oussama-dalhi/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >Oussama Dalhi</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="https://github.com/oussama-dalhi/youtube-transcript-extractor"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >Source code</a
+                  >
+                </li>
+                <li>
+                  Powered by
+                  <a
+                    href="https://transcriptapi.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >TranscriptAPI</a
+                  >
+                </li>
+              </ul>
+            </nav>
+          </footer>
+        </main>
+      </div>
+    </div>
+
+    <dialog
+      class="auth-dialog"
+      id="authDialog"
+      aria-labelledby="authDialogTitle"
+    >
+      <div class="dialog-content">
+        <div class="dialog-topline">
+          <span class="dialog-brand-mark" aria-hidden="true">YT</span>
+          <button
+            class="icon-button dialog-close"
+            id="closeAuthDialog"
+            type="button"
+            aria-label="Close dialog"
+          >
+            ×
+          </button>
+        </div>
+
+        <h2 id="authDialogTitle">Sign in</h2>
+        <p class="dialog-description" id="authDialogDescription">
+          Sign in to access your saved transcripts.
+        </p>
+
+        <form class="auth-form" id="loginForm">
+          <label for="loginUsername">Username</label>
+          <input
+            id="loginUsername"
+            name="username"
+            type="text"
+            minlength="3"
+            maxlength="50"
+            autocomplete="username"
+            required
+          />
+
+          <label for="loginPassword">Password</label>
+          <input
+            id="loginPassword"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            required
+          />
+
+          <button class="auth-submit" type="submit">Sign in</button>
+        </form>
+
+        <form class="auth-form" id="registerForm" hidden>
+          <label for="registerName">Name</label>
+          <input
+            id="registerName"
+            name="name"
+            type="text"
+            minlength="3"
+            maxlength="100"
+            autocomplete="name"
+            required
+          />
+
+          <label for="registerUsername">Username</label>
+          <input
+            id="registerUsername"
+            name="username"
+            type="text"
+            minlength="3"
+            maxlength="50"
+            pattern="[A-Za-z0-9_-]+"
+            autocomplete="username"
+            required
+          />
+
+          <label for="registerPassword">Password</label>
+          <input
+            id="registerPassword"
+            name="password"
+            type="password"
+            minlength="8"
+            maxlength="100"
+            autocomplete="new-password"
+            required
+          />
+
+          <button class="auth-submit" type="submit">Create account</button>
+        </form>
+
+        <p
+          class="auth-status"
+          id="authStatus"
+          role="status"
+          aria-live="polite"
+        ></p>
+
+        <p class="auth-switch" id="loginSwitch">
+          Don't have an account?
+          <button class="text-button" id="showRegisterBtn" type="button">
+            Create account
+          </button>
+        </p>
+        <p class="auth-switch" id="registerSwitch" hidden>
+          Already have an account?
+          <button class="text-button" id="showLoginBtn" type="button">
+            Sign in
+          </button>
+        </p>
+      </div>
+    </dialog>
   </body>
 </html>
