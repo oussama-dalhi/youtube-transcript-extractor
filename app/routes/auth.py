@@ -19,7 +19,7 @@ class RegisterRequest(BaseModel):
         str,
         StringConstraints(
             strip_whitespace=True,
-            min_length=3,
+            min_length=2,
             max_length=100,
         ),
     ]
@@ -51,6 +51,7 @@ class LoginRequest(BaseModel):
 
 
 @router.post("/register", status_code=201)
+@limiter.limit("5/minute")
 def register(body: RegisterRequest, request: Request):
     username = body.username
     hashed_password = password_hasher.hash(body.password)

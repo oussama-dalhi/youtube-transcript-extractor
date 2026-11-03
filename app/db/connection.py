@@ -15,6 +15,10 @@ pool = ConnectionPool(
     min_size=1,
     max_size=5,
     timeout=10,
-    kwargs={"row_factory": dict_row},
+    check=ConnectionPool.check_connection,
+    kwargs={
+        "row_factory": dict_row,
+        "prepare_threshold": None,
+    },
     open=False,
 )
