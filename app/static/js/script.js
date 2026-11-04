@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------------------
+
 // Config
-// ---------------------------------------------------------------------------
+
 const TRANSCRIPT_ENDPOINT = "/transcript";
 const DEFAULT_TITLE = "Transcript";
 const UNTITLED_TITLE = "Untitled video";
@@ -9,9 +9,8 @@ const COPY_FEEDBACK_MS = 1500;
 const MS_PER_DAY = 86_400_000;
 const HISTORY_GROUPS = ["Today", "Yesterday", "Previous 7 days", "Older"];
 
-// ---------------------------------------------------------------------------
-// DOM references
-// ---------------------------------------------------------------------------
+
+
 const $ = (id) => document.getElementById(id);
 
 // Layout
@@ -65,19 +64,19 @@ const reducedMotionQuery = window.matchMedia(
   "(prefers-reduced-motion: reduce)",
 );
 
-// ---------------------------------------------------------------------------
+
 // State
-// ---------------------------------------------------------------------------
+
 let currentUser = null;
 let historyItems = [];
 let selectedHistoryId = null;
-let latestRequest = 0; // bumped by every request that updates the main view
+let latestRequest = 0;
 let statusTimeout;
 let copyTimeout;
 
-// ---------------------------------------------------------------------------
+
 // Status messages
-// ---------------------------------------------------------------------------
+
 function setStatus(message, isError = false) {
   clearTimeout(statusTimeout);
   statusEl.textContent = message;
@@ -94,9 +93,9 @@ function setAuthStatus(message, isError = false) {
   authStatus.classList.toggle("error", isError);
 }
 
-// ---------------------------------------------------------------------------
+
 // Network
-// ---------------------------------------------------------------------------
+
 function getErrorMessage(response, data) {
   if (typeof data?.detail === "string") return data.detail;
   if (response.status === 401) return "Please sign in to continue.";
@@ -124,16 +123,16 @@ async function requestJson(url, options = {}) {
   return data;
 }
 
-// ---------------------------------------------------------------------------
+
 // Sidebar
-// ---------------------------------------------------------------------------
+
 function isSidebarOpen() {
   return mobileQuery.matches
     ? appShell.classList.contains("sidebar-open")
     : !appShell.classList.contains("sidebar-collapsed");
 }
 
-// Keeps `inert` (no focus/clicks when hidden) and aria-expanded in sync.
+
 function syncSidebarState() {
   const open = isSidebarOpen();
   sidebar.inert = !open;
@@ -157,9 +156,9 @@ function closeMobileSidebar() {
   if (mobileQuery.matches) setSidebarOpen(false);
 }
 
-// ---------------------------------------------------------------------------
+
 // Account UI
-// ---------------------------------------------------------------------------
+
 function renderAccount() {
   const isAuthenticated = Boolean(currentUser);
   guestActions.hidden = isAuthenticated;
@@ -171,7 +170,7 @@ function renderAccount() {
   const displayName = currentUser.name || currentUser.username;
   userName.textContent = displayName;
   userUsername.textContent = `@${currentUser.username}`;
-  // Array.from keeps emoji and other multi-unit characters intact.
+  
   userAvatar.textContent =
     Array.from(displayName.trim())[0]?.toUpperCase() || "U";
 }
@@ -190,9 +189,9 @@ async function refreshAuthState() {
   }
 }
 
-// ---------------------------------------------------------------------------
+
 // Auth dialog
-// ---------------------------------------------------------------------------
+
 function setAuthMode(mode) {
   const isLogin = mode === "login";
 
@@ -292,7 +291,7 @@ function parseServerDate(value) {
 const startOfDay = (date) =>
   new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
-// Whole calendar days between `date` and today (rounded, so DST can't skew it).
+
 function getDayDifference(date) {
   if (!date) return null;
   return Math.round((startOfDay(new Date()) - startOfDay(date)) / MS_PER_DAY);
@@ -327,9 +326,6 @@ function getHistoryGroup(value) {
   return "Older";
 }
 
-// ---------------------------------------------------------------------------
-// History: rendering
-// ---------------------------------------------------------------------------
 function renderSidebarMessage(text, isError = false) {
   const message = document.createElement("p");
   message.className = "sidebar-message";
@@ -415,7 +411,7 @@ function renderHistory() {
 async function loadHistory() {
   try {
     const data = await requestJson("/history");
-    // Supports either a plain list or the { items: [...] } response shape.
+  
     historyItems = Array.isArray(data)
       ? data
       : Array.isArray(data?.items)
@@ -436,17 +432,17 @@ async function loadHistory() {
   }
 }
 
-// ---------------------------------------------------------------------------
+
 // Main view
-// ---------------------------------------------------------------------------
+
 function renderResult(title, text) {
   resultTitle.textContent = title;
   output.textContent = text;
 }
 
-// Single place that returns the page to its blank "new transcript" state.
+
 function resetView() {
-  latestRequest++; // discard any response still in flight
+  latestRequest++; // discard any response still in action
   selectedHistoryId = null;
   pageHeader.hidden = false;
   extractControls.hidden = false;
@@ -589,9 +585,9 @@ async function copyTranscript() {
   }, COPY_FEEDBACK_MS);
 }
 
-// ---------------------------------------------------------------------------
+
 // Event wiring
-// ---------------------------------------------------------------------------
+
 
 // Sidebar
 sidebarToggle.addEventListener("click", toggleSidebar);
@@ -653,9 +649,9 @@ urlInput.addEventListener("focus", () => urlInput.select());
 
 copyBtn.addEventListener("click", copyTranscript);
 
-// ---------------------------------------------------------------------------
+
 // Init
-// ---------------------------------------------------------------------------
+
 (async function initializeApp() {
   syncSidebarState();
 

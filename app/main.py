@@ -22,13 +22,12 @@ from app.routes.history import router as history_router
 from app.transcript import TranscriptError, get_transcript
 
 logger = logging.getLogger(__name__)
-logging.getLogger("psycopg").setLevel(logging.DEBUG)
-logging.getLogger("psycopg.pool").setLevel(logging.DEBUG)
+
 
 
 @asynccontextmanager
 async def lifespan(app: fastapi.FastAPI):
-    pool.open(wait=True)
+    pool.open(wait=False)
     try:
         yield
     finally:

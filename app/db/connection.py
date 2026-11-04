@@ -1,3 +1,6 @@
+# AI assistance: Claude helped me understand and configure Psycopg's
+# connection pool for managing database connections.
+
 import os
 
 from dotenv import load_dotenv
@@ -18,7 +21,7 @@ pool = ConnectionPool(
     check=ConnectionPool.check_connection,
     kwargs={
         "row_factory": dict_row,
-        "prepare_threshold": None,
+        "connect_timeout": 15
     },
     open=False,
 )

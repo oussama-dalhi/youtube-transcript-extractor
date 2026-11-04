@@ -1,3 +1,7 @@
+# AI assistance: ChatGPT helped me understand and implement an in-memory
+# cache using cachetools TTLCache, including its expiration behavior.
+
+
 import os
 import re
 import threading
