@@ -1,5 +1,5 @@
 # YouTube Transcript Extractor
-#### Video Demo: <URL HERE>
+#### Video Demo: https://youtu.be/kFYICGW_UJA
 #### Description:
 
 This is my final project for CS50x.
