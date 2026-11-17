@@ -15,7 +15,7 @@ I designed it to work for both guests and registered users. Anyone can extract a
 
 The backend is written in Python with FastAPI, and the frontend is plain HTML, CSS and JavaScript. Users and their history are stored in PostgreSQL (hosted on Neon), I access it using Psycopg 3 and raw SQL. The transcripts come from TranscriptAPI, and the app itself is hosted on FastAPI Cloud.
 
-![Application preview](app/assets/showcase.png)
+![Application preview](app/assets/ytdemo.png)
 
 ## Features
 
